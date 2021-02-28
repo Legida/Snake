@@ -3,108 +3,85 @@
 #include "conio.h"
 using namespace std;
 
-class Field {
+const int width = 25;
+class Array {
 private:
-	int width;
-	int X = 1;
-	int Y = 1;
-	char ch = 0;
-	char** field = new char* [width];
-	void CreateArray() {
+	char array[width][width];
+	char ch;
+	int X;
+	int Y;
+	void Input() {
+		if (_kbhit()) {
+			ch = _getch();
+			switch ((int)ch) {
+			case (int)'a':
+				if (X >= 2) {
+					X -= 1;
+				}
+				break;
+			case (int)'d':
+				if (X <= (width - 3)) {
+					X += 1;
+				}
+				break;
+			case (int)'s':
+				if (Y <= (width - 3)) {
+					Y += 1;
+				}
+				break;
+			case (int)'w':
+				if (Y >= 2) {
+					Y -= 1;
+				}
+				break;
+			}
+		}
+	}
+	void InitArray() {
 		for (int i = 0; i < width; i++) {
-			field[i] = new char[width];
+			for (int j = 0; j < width; j++) {
+				array[i][j] = ' ';
+			}
+		}
+	}
+	void DoBorder() {
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < width; j++) {
+				if ((i == 0) || (i == width - 1) || (j == 0) || (j == width - 1)) {
+					array[i][j] = 17;
+				}
+			}
 		}
 	}
 public:
-	Field(int size) : width(size) {
-		CreateArray();
+	Array() : ch(0), X(width / 2), Y(width / 2) {
+		InitArray();
+	}
+	void OutputAndUpdate() {
+		Input();
+		InitArray();
+		DoBorder();
+		array[Y][X] = '#';
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < width; j++) {
-				field[i][j] = 12;
-			}
-		}
-	}
-	void CreateField() {
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < width; j++) {
-				if ((i % (width - 1) == 0) || (j % (width - 1) == 0)) {
-					field[i][j] = '#';
-				}
-				else {
-					field[i][j] = 32;
-				}
-			}
-		}
-	}
-	void CreateSnake() {
-		if (_kbhit()) {
-			ch = _getch();
-			switch (ch) {
-			case (int )'d':
-				Y++;
-				break;
-			case (int)'w':
-				X--;
-				break;
-			case (int)'a':
-				Y--;
-				break;
-			case (int)'s':
-				X++;
-				break;
-			case 0:
-				break;
-			}
-		}
-		field[X][Y] = '0';
-	}
-	void CreateAll() {
-		CreateField();
-		CreateSnake();
-	}
-	const char GetField(const int& i, const int& j) {
-		if ((i < width) && (j < width) && (i >= 0) && (j >= 0)) {
-			return field[i][j];
-		}
-		else {
-			cout << "ошибка в значении";
-			Sleep(1000);
-			exit(1);
-		}
-	}
-};
-
-class Frame {
-private:
-	int width;
-	const void Output(Field A) {
-		A.CreateField();
-		A.CreateSnake();
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < width; j++) {
-				cout << A.GetField(i, j);
-				if (j == width - 1) {
+				cout << array[i][j];
+				if (j == (width - 1)) {
 					cout << endl;
 				}
 			}
 		}
-	}
-public:
-	Frame(int size) : width(size) {};
-	const void Update(Field field) {
-		Output(field);
-		Sleep(33);
+		cout << endl;
+		Sleep(100);
 		system("cls");
 	}
 };
 
-
 int main() {
-	Frame A(29);
-	Field B(29);
-	int j = 10;
+	Array Test;
+	int j = width;
 	for (int i = 0; i < j; i++) {
-		A.Update(B);
+		Test.OutputAndUpdate();
 		j++;
 	}
+	return 1;
 }
